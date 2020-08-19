@@ -30,7 +30,7 @@
 void setup() {
 	Serial.begin(115200);
 	wifi_connect(); // in wifi_info.h
-	//homekit_storage_reset(); // to remove the previous HomeKit pairing storage when you first run this new HomeKit example
+	homekit_storage_reset(); // to remove the previous HomeKit pairing storage when you first run this new HomeKit example
 	my_homekit_setup();
 }
 
@@ -65,16 +65,9 @@ void cha_switch_on_setter(const homekit_value_t target) {
  bool targetval = target.bool_value;
  
  cha_lock_current_state.value.uint8_value = (targetval)?1:0;
- LOG_D("Current state: %x", cha_lock_current_state.value);
+ LOG_D("Current state: %i", cha_lock_current_state.value);
  homekit_characteristic_notify(&cha_lock_current_state, cha_lock_current_state.value);
-  digitalWrite(PIN_SWITCH,  cha_lock_current_state.value.bool_value);
-  
-  cha_lock_current_state.value.uint8_value = false;
-  homekit_characteristic_notify(&cha_lock_current_state, cha_lock_current_state.value);
-
-//  delay(10000);
-
-  digitalWrite(PIN_SWITCH,  cha_lock_current_state.value.bool_value);
+ digitalWrite(PIN_SWITCH,  cha_lock_current_state.value.bool_value);
 }
 
 void my_homekit_setup() {
@@ -100,10 +93,6 @@ void my_homekit_loop() {
 	const uint32_t t = millis();
 	if (t > next_heap_millis) {
 		// show heap info every 5 seconds
-   
-    cha_lock_current_state.value.uint8_value = (uint8)0;
-  homekit_characteristic_notify(&cha_lock_current_state, cha_lock_current_state.value);
-   
 		next_heap_millis = t + 5 * 1000;
 		LOG_D("Free heap: %d, HomeKit clients: %d",
 				ESP.getFreeHeap(), arduino_homekit_connected_clients_count());

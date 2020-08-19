@@ -27,6 +27,9 @@
 
 #define LOG_D(fmt, ...)   printf_P(PSTR(fmt "\n") , ##__VA_ARGS__);
 
+// Timeout in seconds to open lock for
+const int unlock_period = 5;  // 5 seconds
+
 void setup() {
 	Serial.begin(115200);
 	wifi_connect(); // in wifi_info.h
@@ -63,11 +66,24 @@ void cha_switch_on_setter(const homekit_value_t target) {
     lock_state_unknown = 3,
  */
  bool targetval = target.bool_value;
- 
- cha_lock_current_state.value.uint8_value = (targetval)?1:0;
- LOG_D("Current state: %i", cha_lock_current_state.value);
- homekit_characteristic_notify(&cha_lock_current_state, cha_lock_current_state.value);
- digitalWrite(PIN_SWITCH,  cha_lock_current_state.value.bool_value);
+
+ if (targetval == 0) {
+   LOG_D("unlocking request by homekit...");
+   cha_lock_current_state.value.uint8_value = 0;
+  }
+
+  if (targetval == 1) {
+   LOG_D("locking request by homekit...");
+   cha_lock_current_state.value.uint8_value = 1;
+  }
+
+  //Write state change out to pins
+  digitalWrite(PIN_SWITCH,  cha_lock_current_state.value.bool_value);
+
+  //notify homekit of the change of state
+  homekit_characteristic_notify(&cha_lock_current_state, cha_lock_current_state.value);
+
+
 }
 
 void my_homekit_setup() {

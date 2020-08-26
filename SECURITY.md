@@ -2,7 +2,7 @@
 
 ## We will buy you a pint policy
 
-As with all our home automation projects for our apartment if you find something we will buy you 1 pint (568.261 ml).
+As with all our home automation projects for our apartment if you find something interesting we will buy you 1 imperial pint (568.261 ml).
 
 ## Reporting a Vulnerability
 
